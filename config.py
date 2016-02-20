@@ -47,6 +47,20 @@ EXPRESS_TIMEOUT_TEXT = u'自动退出快递查询模式啦\n\n回复“快递”
 
 ENTER_EXPRESS_STATE_TEXT = u"已进入快递查询模式\n\n直接回复运单号\n即可查询快递信息\n\n回复“取消”退出本模式"
 
+LANTERN_TIMEOUT_TEXT = u'超时啦\n自动退出猜灯谜模式啦~\n\n回复“猜灯谜”可以重新进入\n<a href="http://lantern.gxgk.cc/?s=/Home/Riddle/rank">排行榜点我</a>'
+
+LANTERN_NOBEGIN_TEXT = u"猜灯谜活动还没开始呢\n请大家耐心等待\n谢谢支持[调皮]~"
+
+LANTERN_END_TEXT = u'猜灯谜活动已经结束啦\n谢谢大家参与\n领奖时间要等到开学哦！\n敬请期待[调皮]~\n<a href="http://lantern.gxgk.cc/?s=/Home/Riddle/rank">排行榜点我</a>'
+
+
+LANTERN_RANK_LIST = [{
+    'title': u'小喵灯谜竞猜排行榜',
+    'description': u'快看你上榜了没！',
+    'picurl': 'http://lantern.gxgk.cc/lanternlogo.jpg',
+    'url': u'http://lantern.gxgk.cc/?s=/Home/Riddle/rank'
+}]
+
 BUS_ROUTES_NEWS = [{
     'title': u'公交路线时刻表',
     'description': u'没时间解释，快上车！',

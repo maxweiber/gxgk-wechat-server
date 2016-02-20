@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import re
+import datetime,time
 from main import app
 from .models import set_user_info, get_user_student_info, get_user_library_info
 from .utils import AESCipher, init_wechat_sdk
 from .plugins.state import set_user_state, get_user_state, \
     set_user_last_interact_time, get_user_last_interact_time
 from .plugins import simsimi, sign, express, music, score, library, \
-    school_news, weather, wechat_custom
+    school_news, weather, wechat_custom, lantern
 
 
 def wechat_response(data):
@@ -33,6 +34,7 @@ def wechat_response(data):
         # 指令列表
         commands = {
             u'取消': cancel_command,
+            u'退出': cancel_command,
             u'^\?|^？': all_command,
             u'^雷达|^雷達': weather_radar,
             u'^電話|^电话': phone_number,
@@ -54,12 +56,15 @@ def wechat_response(data):
             u'^论坛|^論壇': bbs_url,
             u'^快递|^快遞': enter_express_state,
             u'^绑定|^綁定': auth_url,
+            u'^猜灯谜|^猜燈謎': enter_lantern_state,
+            u'^排行榜': lantern_rank_list,
             u'更新菜单': update_menu_setting
         }
         # 状态列表
         state_commands = {
             'chat': chat_robot,
-            'express': express_shipment_tracking
+            'express': express_shipment_tracking,
+            'lantern': guess_lantern
         }
 
         # 匹配指令
@@ -338,3 +343,38 @@ def phone_number():
     """回复电话号码"""
     content = app.config['PHONE_NUMBER_TEXT'] + app.config['HELP_TEXT']
     return wechat.response_text(content)
+
+
+def enter_lantern_state():
+    """进入猜灯谜模式"""
+    
+    today = datetime.datetime.now()
+    beginday = datetime.datetime(2016, 2, 5, 00, 00)
+    endday = datetime.datetime(2016, 2, 23, 00, 00)
+    if today < beginday:
+       return wechat.response_text(app.config['LANTERN_NOBEGIN_TEXT'])
+    if today > endday:
+       return wechat.response_text(app.config['LANTERN_END_TEXT'])
+    else:
+       set_user_state(openid, 'lantern')
+       lantern.before_lantern_riddles(openid, message.content)
+       return 'success'
+
+
+def guess_lantern():
+    """猜灯谜"""
+    timeout = int(message.time) - int(get_user_last_interact_time(openid))
+    # 超过一段时间，退出模式
+    if timeout > 30 * 60:
+        set_user_state(openid, 'default')
+        content = app.config['LANTERN_TIMEOUT_TEXT'] + app.config['HELP_TEXT']
+        return wechat.response_text(content)
+    else:
+        lantern.gress_lantern_riddles(openid, message.content)
+        return 'success'
+
+
+def lantern_rank_list():
+    """猜灯谜排行榜"""
+    return wechat.response_news(app.config['LANTERN_RANK_LIST'])
+
