@@ -356,9 +356,8 @@ def enter_lantern_state():
     if today > end:
         return wechat.response_text(app.config['LANTERN_END_TEXT'])
     else:
-        context = lantern.before_lantern_riddles.delay(openid, message.content)
-        if context != 'noenter':
-            set_user_state(openid, 'lantern')
+        set_user_state(openid, 'lantern')
+        lantern.before_lantern_riddles.delay(openid, message.content)
         return 'success'
 
 

@@ -35,13 +35,9 @@ def before_lantern_riddles(openid, text):
                "openid": openid, "nickname": user_nickname, "msg": text}
     try:
         r = requests.post(url, data=payload, timeout=20)
-        order = r.json()['order']
         answer = r.json()['response']
     except Exception, e:
         app.logger.warning(u"before_lantern 请求或解析失败: %s, text: %s" % (e, text))
         return wechat_custom.send_text(openid, u'小喵犯傻了，请重新回复！')
     else:
-        wechat_custom.send_text(openid, answer)
-        if order != 'noenter':
-            return None
-        return 'noenter'
+        return wechat_custom.send_text(openid, answer)
