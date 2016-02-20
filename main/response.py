@@ -350,7 +350,7 @@ def enter_lantern_state():
 
     today = datetime.datetime.now()
     begin = datetime.datetime(2016, 2, 20, 20, 00)
-    end = datetime.datetime(2016, 2, 23, 00, 00)
+    end = datetime.datetime(2016, 2, 24, 00, 00)
     if today < begin:
         return wechat.response_text(app.config['LANTERN_NOBEGIN_TEXT'])
     if today > end:
