@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import re
-import datetime,time
+import datetime
 from main import app
 from .models import set_user_info, get_user_student_info, get_user_library_info
 from .utils import AESCipher, init_wechat_sdk
@@ -347,19 +347,19 @@ def phone_number():
 
 def enter_lantern_state():
     """进入猜灯谜模式"""
-    
+
     today = datetime.datetime.now()
     begin = datetime.datetime(2016, 2, 20, 20, 00)
     end = datetime.datetime(2016, 2, 23, 00, 00)
     if today < begin:
-       return wechat.response_text(app.config['LANTERN_NOBEGIN_TEXT'])
+        return wechat.response_text(app.config['LANTERN_NOBEGIN_TEXT'])
     if today > end:
-       return wechat.response_text(app.config['LANTERN_END_TEXT'])
+        return wechat.response_text(app.config['LANTERN_END_TEXT'])
     else:
-       context = lantern.before_lantern_riddles(openid, message.content)
-       if context != 'noenter':
+        context = lantern.before_lantern_riddles.delay(openid, message.content)
+        if context != 'noenter':
             set_user_state(openid, 'lantern')
-       return 'success'
+        return 'success'
 
 
 def guess_lantern():
@@ -371,11 +371,10 @@ def guess_lantern():
         content = app.config['LANTERN_TIMEOUT_TEXT'] + app.config['HELP_TEXT']
         return wechat.response_text(content)
     else:
-        lantern.gress_lantern_riddles(openid, message.content)
+        lantern.gress_lantern_riddles.delay(openid, message.content)
         return 'success'
 
 
 def lantern_rank_list():
     """猜灯谜排行榜"""
     return wechat.response_news(app.config['LANTERN_RANK_LIST'])
-

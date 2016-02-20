@@ -59,6 +59,21 @@ def set_user_info(openid):
         return None
 
 
+def get_user_nickname(openid):
+    """读取用户信息"""
+    redis_prefix = "wechat:user:"
+    user_info_cache = redis.hgetall(redis_prefix + openid)
+
+    if not user_info_cache:
+        user_info = User.query.filter_by(openid=openid).first()
+        if not user_info:
+            return 'nobody'
+        else:
+            return user_info.nickname
+    else:
+        return user_info_cache['nickname']
+
+
 def is_user_exists(openid):
     """用户是否存在数据库"""
     redis_prefix = "wechat:user:"
