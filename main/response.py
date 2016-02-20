@@ -349,15 +349,16 @@ def enter_lantern_state():
     """进入猜灯谜模式"""
     
     today = datetime.datetime.now()
-    beginday = datetime.datetime(2016, 2, 5, 00, 00)
-    endday = datetime.datetime(2016, 2, 23, 00, 00)
-    if today < beginday:
+    begin = datetime.datetime(2016, 2, 20, 20, 00)
+    end = datetime.datetime(2016, 2, 23, 00, 00)
+    if today < begin:
        return wechat.response_text(app.config['LANTERN_NOBEGIN_TEXT'])
-    if today > endday:
+    if today > end:
        return wechat.response_text(app.config['LANTERN_END_TEXT'])
     else:
-       set_user_state(openid, 'lantern')
-       lantern.before_lantern_riddles(openid, message.content)
+       context = lantern.before_lantern_riddles(openid, message.content)
+       if context != 'noenter':
+            set_user_state(openid, 'lantern')
        return 'success'
 
 
@@ -365,7 +366,7 @@ def guess_lantern():
     """猜灯谜"""
     timeout = int(message.time) - int(get_user_last_interact_time(openid))
     # 超过一段时间，退出模式
-    if timeout > 30 * 60:
+    if timeout > 20 * 60:
         set_user_state(openid, 'default')
         content = app.config['LANTERN_TIMEOUT_TEXT'] + app.config['HELP_TEXT']
         return wechat.response_text(content)
