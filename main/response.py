@@ -8,7 +8,7 @@ from .utils import AESCipher, init_wechat_sdk
 from .plugins.state import set_user_state, get_user_state, \
     set_user_last_interact_time, get_user_last_interact_time
 from .plugins import simsimi, sign, express, music, score, library, \
-    school_news, weather, wechat_custom
+    school_news, weather, wechat_custom, teasing
 
 
 def wechat_response(data):
@@ -80,12 +80,15 @@ def text_resp():
         u'^论坛|^論壇': bbs_url,
         u'^快递|^快遞': enter_express_state,
         u'^绑定|^綁定': auth_url,
+		u'投稿':contribute,
+		u'吐槽':teasing_push,
         u'更新菜单': update_menu_setting
     }
     # 状态列表
     state_commands = {
         'chat': chat_robot,
-        'express': express_shipment_tracking
+        'express': express_shipment_tracking,
+		'teasing': teasing_state
     }
     # 匹配指令
     command_match = False
@@ -120,6 +123,7 @@ def click_resp():
         'chat_robot': enter_chat_state,
         'music': play_music,
         'weather': get_weather_news
+
     }
     # 匹配指令后，重置状态
     set_user_state(openid, 'default')
@@ -369,3 +373,29 @@ def phone_number():
     """回复电话号码"""
     content = app.config['PHONE_NUMBER_TEXT'] + app.config['HELP_TEXT']
     return wechat.response_text(content)
+
+
+def contribute():
+	"""投稿"""
+	content = app.config['CONTRIBUTION_TEXT']
+	return wechat.response_text(content)
+
+
+def teasing_push():
+	"""进入吐槽"""
+	set_user_state(openid, 'teasing')
+	teasing.teasing_start.delay(openid, message.content)
+	return 'success'
+
+
+def teasing_state():
+    """吐槽"""
+    timeout = int(message.time) - int(get_user_last_interact_time(openid))
+    # 超过一段时间，退出模式
+    if timeout > 5 * 60:
+        set_user_state(openid, 'default')
+        content =  app.config['TEASING_TIMEOUT_TEXT'] + app.config['HELP_TEXT']
+        return wechat.response_text(content)
+    else:
+        teasing.commiserate.delay(openid, message.content)
+        return 'success'

@@ -43,6 +43,10 @@ ENTER_CHAT_STATE_TEXT = u"已进入自动陪聊模式\n回复你想要说的话�
 
 CHAT_TIMEOUT_TEXT = u"那么久不理小喵[可怜]\n自动退出陪聊模式啦~\n\n回复“陪聊”可以重新进入"
 
+CONTRIBUTION_TEXT = u'欢迎到小喵投稿~\n规则说明:<a href="http://mp.weixin.qq.com/s?__biz=MzI1MzA1MzQ0MA==&mid=405371033&idx=2&sn=91036e4e1020bf0d2a8fb03c9f5c65ca">点击这里</a>\n投稿邮箱：xiaomiao@gxgk.cc\n灵感突现：<a href="http://zw.gxgk.cc/Home/Contribute/article.html">点击这里</a>'
+
+TEASING_TIMEOUT_TEXT = u'超时啦\n自动退出吐槽模式啦~'
+
 EXPRESS_TIMEOUT_TEXT = u'自动退出快递查询模式啦\n\n回复“快递”重新进入查询'
 
 ENTER_EXPRESS_STATE_TEXT = u"已进入快递查询模式\n\n直接回复运单号\n即可查询快递信息\n\n回复“取消”退出本模式"

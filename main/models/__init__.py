@@ -144,6 +144,22 @@ def get_today_sign_ranklist(today_timestamp):
     return data
 
 
+def get_user_nickname(openid):
+    """读取用户信息"""
+    redis_prefix = "wechat:user:"
+    user_info_cache = redis.hgetall(redis_prefix + openid)
+
+    if not user_info_cache:
+        user_info = User.query.filter_by(openid=openid).first()
+        if not user_info:
+            return 'nobody'
+        else:
+            return user_info.nickname
+    else:
+        return user_info_cache['nickname']
+
+
+
 def get_sign_keepdays_ranklist():
     """获取续签排行榜"""
     data = Sign.query.join(User, Sign.openid == User.openid) \
